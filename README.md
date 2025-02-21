@@ -1,66 +1,74 @@
-## Foundry
+# Decide Smart Contract
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+## Overview
+Decide is a smart contract that enables users to participate in contests, submit entries, and win rewards based on voting results. The contract ensures fairness by requiring participants to pay an entry fee and distributing rewards to winners.
 
-Foundry consists of:
+## Features
+- **Contest Creation**: Admins can create contests with a specified entry fee and deadline.
+- **Joining Contests**: Users can join contests by paying the entry fee in Ether.
+- **Voting Mechanism**: Participants can vote for their favorite entries.
+- **Prize Distribution**: The top three winners receive rewards based on a predefined percentage split.
 
--   **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
--   **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
--   **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
--   **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+## Contract Deployment
 
-## Documentation
+### Prerequisites
+Ensure you have the following set up before deploying the contract:
+- [Foundry](https://github.com/foundry-rs/foundry) installed
+- An Ethereum wallet with sufficient Sepolia testnet ETH
+- `SEPOLIA_RPC_URL` and `ETHERSCAN_API_KEY` set in your environment variables
 
-https://book.getfoundry.sh/
+### Deployment Steps
+1. Compile the contract:
+   ```sh
+   forge build
+   ```
+2. Run unit tests:
+   ```sh
+   forge test
+   ```
+3. Deploy locally:
+   ```sh
+   make deploy
+   ```
+4. Deploy to Sepolia:
+   ```sh
+   make deploy ARGS="--network sepolia"
+   ```
 
-## Usage
+## Contract Functions
 
-### Build
+### **joinContest**
+```solidity
+function joinContest(uint256 _contestId, string memory _name) public payable
+```
+- Allows a user to join a contest by paying the entry fee in Ether.
+- Conditions:
+  - The contest must be open.
+  - The entry period must not have passed.
+  - The user must not have already joined.
 
-```shell
-$ forge build
+### **_distributePrizes** (Internal)
+```solidity
+function _distributePrizes(uint256 _contestId) internal
+```
+- Distributes rewards to the top three winners.
+- Prize allocation:
+  - **1st place**: 50% of total pool
+  - **2nd place**: 30% of total pool
+  - **3rd place**: 20% of total pool
+
+## Environment Variables
+Set up your `.env` file with the following:
+```
+SEPOLIA_RPC_URL=YOUR_SEPOLIA_RPC_URL
+ETHERSCAN_API_KEY=YOUR_ETHERSCAN_API_KEY
 ```
 
-### Test
-
-```shell
-$ forge test
+## Testing
+Run tests using:
+```sh
+forge test
 ```
 
-### Format
-
-```shell
-$ forge fmt
-```
-
-### Gas Snapshots
-
-```shell
-$ forge snapshot
-```
-
-### Anvil
-
-```shell
-$ anvil
-```
-
-### Deploy
-
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
-
-### Cast
-
-```shell
-$ cast <subcommand>
-```
-
-### Help
-
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
-```
+## License
+This project is licensed under the MIT License.
